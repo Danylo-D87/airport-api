@@ -4,7 +4,10 @@ from airport.views import (
     CountryViewSet,
     CityViewSet,
     AirportViewSet,
-    AirplaneTypeViewSet, AirplaneViewSet, CrewViewSet, RouteViewSet,
+    AirplaneTypeViewSet,
+    AirplaneViewSet,
+    CrewViewSet,
+    RouteViewSet,
 )
 
 

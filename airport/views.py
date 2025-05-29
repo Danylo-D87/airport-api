@@ -1,4 +1,3 @@
-from django.conf.global_settings import Router
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny
 
