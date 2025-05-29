@@ -4,10 +4,13 @@ from rest_framework.permissions import AllowAny
 from airport.models import (
     Country,
     City,
+    Airport,
 )
+from airport.permissions import IsStaffUser
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
+    AirportSerializer,
 )
 
 
@@ -39,3 +42,15 @@ class CityViewSet(
     queryset = City.objects.select_related("country").all()
     serializer_class = CitySerializer
     permission_classes = (AllowAny,)
+
+
+class AirportViewSet(viewsets.ModelViewSet):
+    queryset = Airport.objects.select_related("city").all()
+    serializer_class = AirportSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsStaffUser]
+        return [permission() for permission in permission_classes]

@@ -29,3 +29,14 @@ class CitySerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ("id", "name", "country")
+
+
+class AirportSerializer(serializers.ModelSerializer):
+    city = serializers.SlugRelatedField(
+        slug_field="name",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Airport
+        fields = ("id", "name", "city")
