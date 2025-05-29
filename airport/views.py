@@ -8,14 +8,16 @@ from airport.models import (
     AirplaneType,
     Airplane,
     Crew,
-    Route,
+    Route, Flight,
 )
 from airport.permissions import IsStaffUser
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
     AirportSerializer,
-    CrewSerializer, RouteSerializer,
+    CrewSerializer,
+    RouteSerializer,
+    FlightSerializer,
 )
 
 
@@ -88,9 +90,23 @@ class CrewViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsStaffUser()]
 
+
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.select_related("source", "destination")
     serializer_class = RouteSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return [IsStaffUser()]
+
+
+class FlightViewSet(viewsets.ModelViewSet):
+    queryset = Flight.objects.all().select_related(
+        "route",
+        "airplane"
+    ).prefetch_related("crew")
+    serializer_class = FlightSerializer
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
