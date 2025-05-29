@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework import routers
 from airport.views import (
     CountryViewSet,
@@ -7,7 +9,9 @@ from airport.views import (
     AirplaneTypeViewSet,
     AirplaneViewSet,
     CrewViewSet,
-    RouteViewSet, FlightViewSet, OrderViewSet,
+    RouteViewSet,
+    FlightViewSet,
+    OrderViewSet,
 )
 
 
@@ -24,6 +28,6 @@ router.register("orders", OrderViewSet, basename="order")
 
 urlpatterns = [
     path("", include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 app_name = "airport"

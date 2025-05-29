@@ -1,4 +1,8 @@
+import os
+import uuid
+
 from django.db import models
+from django.utils.text import slugify
 
 from config import settings
 
@@ -20,12 +24,21 @@ class AirplaneType(models.Model):
         return f"{self.name}"
 
 
+# Кастомна назва для фото
+def movie_image_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/movies/", filename)
+
+
 # Літаки
 class Airplane(models.Model):
     name = models.CharField(max_length=255)
     rows = models.IntegerField()
     seats_in_rows = models.IntegerField()
     airplane_type = models.ForeignKey(AirplaneType, on_delete=models.CASCADE)
+    image = models.ImageField(null=True, upload_to=movie_image_file_path)
 
     def __str__(self):
         return f"{self.name}"
