@@ -102,4 +102,4 @@ class Ticket(models.Model):
         unique_together = ("flight", "row_number", "seat_number")
 
     def __str__(self):
-        return f"Ticket for flight {self.flight.id}, row {self.row_number}, seat {self.seat}"
+        return f"Ticket for flight {self.flight.id}, row {self.row_number}, seat {self.seat_number}"

@@ -178,9 +178,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
         # Перевірка на дублікати у запиті (щоб не було однакових місць у одному замовленні)
         for ticket in tickets_data:
-            flight = ticket['flight']
-            row = ticket['row_number']
-            seat = ticket['seat_number']
+            flight = ticket["flight"]
+            row = ticket["row_number"]
+            seat = ticket["seat_number"]
 
             if (flight, row, seat) in flight_ticket_pairs:
                 raise serializers.ValidationError(f"Duplicate seat {row}-{seat} for flight {flight} in request.")
