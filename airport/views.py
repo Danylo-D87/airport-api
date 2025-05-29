@@ -1,5 +1,5 @@
 from rest_framework import viewsets, mixins
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from airport.models import (
     Country,
@@ -8,9 +8,11 @@ from airport.models import (
     AirplaneType,
     Airplane,
     Crew,
-    Route, Flight,
+    Route,
+    Flight,
+    Order,
 )
-from airport.permissions import IsStaffUser
+from airport.permissions import IsStaffUser, IsStaffOrOwner
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
@@ -18,6 +20,7 @@ from airport.serializers import (
     CrewSerializer,
     RouteSerializer,
     FlightSerializer,
+    OrderSerializer,
 )
 
 
@@ -112,3 +115,14 @@ class FlightViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return [AllowAny()]
         return [IsStaffUser()]
+
+
+class OrderViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated, IsStaffOrOwner]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_staff:
+            return Order.objects.all()
+        return Order.objects.filter(user=user)

@@ -108,3 +108,19 @@ class FlightSerializer(serializers.ModelSerializer):
         if arrival and departure and arrival <= departure:
             raise serializers.ValidationError("Час прильоту має бути пізніше часу вильоту.")
         return data
+
+
+class TicketSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "row_number", "seat_number", "flight")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    tickets = TicketSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ("id", "created_at", "tickets")
+        read_only_fields = ("id", "created_at")
