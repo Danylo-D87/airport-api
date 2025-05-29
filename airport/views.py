@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from airport.models import (
     Country,
     City,
-    Airport,
+    Airport, AirplaneType,
 )
 from airport.permissions import IsStaffUser
 from airport.serializers import (
@@ -50,7 +50,16 @@ class AirportViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
-            permission_classes = [AllowAny]
-        else:
-            permission_classes = [IsStaffUser]
-        return [permission() for permission in permission_classes]
+            return [AllowAny]
+        return [IsStaffUser]
+
+
+class AirplaneTypeViewSet(viewsets.ModelViewSet):
+    queryset = AirplaneType.objects.all()
+    serializer_class = AirportSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny]
+        return [IsStaffUser]
+
