@@ -1,3 +1,4 @@
+from django.conf.global_settings import Router
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny
 
@@ -8,13 +9,14 @@ from airport.models import (
     AirplaneType,
     Airplane,
     Crew,
+    Route,
 )
 from airport.permissions import IsStaffUser
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
     AirportSerializer,
-    CrewSerializer,
+    CrewSerializer, RouteSerializer,
 )
 
 
@@ -81,6 +83,15 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
     serializer_class = CrewSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return [IsStaffUser()]
+
+class RouteViewSet(viewsets.ModelViewSet):
+    queryset = Route.objects.select_related("source", "destination")
+    serializer_class = RouteSerializer
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
