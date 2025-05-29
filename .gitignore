@@ -71,3 +71,26 @@ htmlcov/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Python
+
+
+# Віртуальне середовище (приклади)
+
+.env/
+
+# Логи
+
+# Django
+*.sqlite3
+
+uploads/
+uploads/images/
+
+
+*.swp
+*.swo
+
+# Migrations (іноді трекають, іноді ні — залежить)
+**/migrations/
+!**/migrations/__init__.py
