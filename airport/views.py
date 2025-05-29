@@ -6,12 +6,15 @@ from airport.models import (
     City,
     Airport,
     AirplaneType,
+    Airplane,
+    Crew,
 )
 from airport.permissions import IsStaffUser
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,
     AirportSerializer,
+    CrewSerializer,
 )
 
 
@@ -64,3 +67,22 @@ class AirplaneTypeViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsStaffUser()]
 
+
+class AirplaneViewSet(viewsets.ModelViewSet):
+    queryset = Airplane.objects.select_related().all()
+    serializer_class = AirportSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return [IsStaffUser()]
+
+
+class CrewViewSet(viewsets.ModelViewSet):
+    queryset = Crew.objects.all()
+    serializer_class = CrewSerializer
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+        return [IsStaffUser()]
