@@ -1,5 +1,7 @@
 from rest_framework import viewsets, mixins
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.viewsets import GenericViewSet
 
 from airport.models import (
     Country,
@@ -21,6 +23,9 @@ from airport.serializers import (
     RouteSerializer,
     FlightSerializer,
     OrderSerializer,
+    AirplaneTypeSerializer,
+    AirplaneSerializer,
+    OrderListSerializer,
 )
 
 
@@ -66,7 +71,7 @@ class AirportViewSet(viewsets.ModelViewSet):
 
 class AirplaneTypeViewSet(viewsets.ModelViewSet):
     queryset = AirplaneType.objects.all()
-    serializer_class = AirportSerializer
+    serializer_class = AirplaneTypeSerializer
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
@@ -75,8 +80,8 @@ class AirplaneTypeViewSet(viewsets.ModelViewSet):
 
 
 class AirplaneViewSet(viewsets.ModelViewSet):
-    queryset = Airplane.objects.select_related().all()
-    serializer_class = AirportSerializer
+    queryset = Airplane.objects.select_related("airplane_type").all()
+    serializer_class = AirplaneSerializer
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:
@@ -95,7 +100,7 @@ class CrewViewSet(viewsets.ModelViewSet):
 
 
 class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.select_related("source", "destination")
+    queryset = Route.objects.select_related("source", "destination").all()
     serializer_class = RouteSerializer
 
     def get_permissions(self):
@@ -117,12 +122,16 @@ class FlightViewSet(viewsets.ModelViewSet):
         return [IsStaffUser()]
 
 
-class OrderViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated, IsStaffOrOwner]
+class OrderViewSet(mixins.ListModelMixin,
+                   mixins.CreateModelMixin,
+                   viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_staff:
-            return Order.objects.all()
-        return Order.objects.filter(user=user)
+        return Order.objects.filter(user=self.request.user).prefetch_related("tickets__flight")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return OrderListSerializer
+        return OrderSerializer
+

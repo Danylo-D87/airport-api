@@ -25,7 +25,7 @@ class Airplane(models.Model):
     name = models.CharField(max_length=255)
     rows = models.IntegerField()
     seats_in_rows = models.IntegerField()
-    airplane_type = models.ForeignKey(AirplaneType, on_delete=models.CASCADE, related_name="airplane_type")
+    airplane_type = models.ForeignKey(AirplaneType, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
@@ -53,6 +53,9 @@ class City(models.Model):
     name = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
 
+    class Meta:
+        unique_together = ("country", "name")
+
     def __str__(self):
         return f"{self.name}, {self.country}"
 
@@ -61,6 +64,9 @@ class City(models.Model):
 class Airport(models.Model):
     name = models.CharField(max_length=255)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="airports")
+
+    class Meta:
+        unique_together = ("city", "name")
 
     def __str__(self):
         return f"{self.name}"
@@ -88,12 +94,12 @@ class Flight(models.Model):
 # Квитки
 class Ticket(models.Model):
     row_number = models.IntegerField()
-    seat_number = models.IntegerField()
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, related_name="tickets")
+    seat_number  = models.PositiveSmallIntegerField()
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="tickets")
 
     class Meta:
-        unique_together = ("row_number", "seat_number", "flight")
+        unique_together = ("flight", "row_number", "seat_number")
 
     def __str__(self):
-        return f"{self.order}"
+        return f"Ticket for flight {self.flight.id}, row {self.row_number}, seat {self.seat}"
