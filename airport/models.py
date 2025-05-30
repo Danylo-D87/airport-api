@@ -7,7 +7,6 @@ from django.utils.text import slugify
 from config import settings
 
 
-# Екіпаж
 class Crew(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -16,7 +15,6 @@ class Crew(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-# Тип літака
 class AirplaneType(models.Model):
     name = models.CharField(max_length=255)
 
@@ -24,7 +22,6 @@ class AirplaneType(models.Model):
         return f"{self.name}"
 
 
-# Кастомна назва для фото
 def movie_image_file_path(instance, filename):
     _, extension = os.path.splitext(filename)
     filename = f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
@@ -32,7 +29,6 @@ def movie_image_file_path(instance, filename):
     return os.path.join("uploads/movies/", filename)
 
 
-# Літаки
 class Airplane(models.Model):
     name = models.CharField(max_length=255)
     rows = models.IntegerField()
@@ -44,7 +40,6 @@ class Airplane(models.Model):
         return f"{self.name}"
 
 
-# Ордер
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
@@ -53,7 +48,6 @@ class Order(models.Model):
         return f"{self.created_at}"
 
 
-# Країна
 class Country(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
@@ -61,7 +55,6 @@ class Country(models.Model):
         return self.name
 
 
-# Місто
 class City(models.Model):
     name = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name="cities")
@@ -73,7 +66,6 @@ class City(models.Model):
         return f"{self.name}, {self.country}"
 
 
-# Аеропорт
 class Airport(models.Model):
     name = models.CharField(max_length=255)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="airports")
@@ -85,7 +77,6 @@ class Airport(models.Model):
         return f"{self.name}"
 
 
-# Маршрут
 class Route(models.Model):
     source = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="routes_from")
     destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="routes_to")
@@ -95,7 +86,6 @@ class Route(models.Model):
         return f"{self.source} -> {self.destination}"
 
 
-# Політ
 class Flight(models.Model):
     route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name="flights")
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE, related_name="flights")
@@ -104,7 +94,6 @@ class Flight(models.Model):
     crew = models.ManyToManyField(Crew)
 
 
-# Квитки
 class Ticket(models.Model):
     row_number = models.IntegerField()
     seat_number  = models.PositiveSmallIntegerField()
