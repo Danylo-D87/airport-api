@@ -1,8 +1,23 @@
 from django.test import TestCase
-from airport.serializers import RouteSerializer, TicketSerializer, FlightSerializer
+from airport.serializers import (
+    RouteSerializer,
+    TicketSerializer,
+    FlightSerializer,
+)
 from django.utils import timezone
 from datetime import timedelta
-from airport.models import Airplane, AirplaneType, Route, Flight, Airport, City, Country, Crew, Ticket, Order
+from airport.models import (
+    Airplane,
+    AirplaneType,
+    Route,
+    Flight,
+    Airport,
+    City,
+    Country,
+    Crew,
+    Ticket,
+    Order,
+)
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -76,7 +91,7 @@ class FlightSerializerTest(TestCase):
         serializer = FlightSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("departure_time", serializer.errors)
-        self.assertEqual(serializer.errors["departure_time"][0], "Час вильоту не може бути в минулому.")
+        self.assertEqual(serializer.errors["departure_time"][0], "Departure time cannot be in the past.")
 
     def test_arrival_before_departure(self):
         departure = timezone.now() + timedelta(days=1)
@@ -91,7 +106,7 @@ class FlightSerializerTest(TestCase):
         serializer = FlightSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("non_field_errors", serializer.errors)
-        self.assertEqual(serializer.errors["non_field_errors"][0], "Час прильоту має бути пізніше часу вильоту.")
+        self.assertEqual(serializer.errors["non_field_errors"][0], "Arrival time must be later than departure time.")
 
 
 class TicketSerializerTest(TestCase):
@@ -125,7 +140,7 @@ class TicketSerializerTest(TestCase):
 
     def test_row_number_out_of_range(self):
         data = {
-            "row_number": 31,  # поза межами рядів літака
+            "row_number": 31,
             "seat_number": 3,
             "flight": self.flight.pk,
         }
