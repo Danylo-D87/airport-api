@@ -4,6 +4,8 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from airport.permissions import IsStaffUser, IsStaffOrOwner
+
 
 from airport.models import (
     Country,
@@ -16,7 +18,6 @@ from airport.models import (
     Flight,
     Order,
 )
-from airport.permissions import IsStaffUser, IsStaffOrOwner
 from airport.serializers import (
     CountrySerializer,
     CitySerializer,

@@ -136,16 +136,13 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ("row_number", "seat_number", "flight")
 
     def validate(self, data):
-        # Валідація, що місце не зайняте на конкретному рейсі
         flight = data.get("flight")
         row = data.get("row_number")
         seat = data.get("seat_number")
 
-        # Перевірка, чи місце не зайняте
         if Ticket.objects.filter(flight=flight, row_number=row, seat_number=seat).exists():
             raise serializers.ValidationError("This seat is already booked on this flight.")
 
-        # Перевірка, чи ряд та місце у межах літака
         airplane = flight.airplane
         if row < 1 or row > airplane.rows:
             raise serializers.ValidationError(f"Row number must be between 1 and {airplane.rows}.")
@@ -155,7 +152,6 @@ class TicketSerializer(serializers.ModelSerializer):
         return data
 
 class TicketListSerializer(serializers.ModelSerializer):
-    # Для виводу можна показати деталі рейсу, наприклад, id
     flight = serializers.StringRelatedField()
 
     class Meta:
@@ -176,7 +172,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         flight_ticket_pairs = set()
 
-        # Перевірка на дублікати у запиті (щоб не було однакових місць у одному замовленні)
         for ticket in tickets_data:
             flight = ticket["flight"]
             row = ticket["row_number"]
@@ -186,7 +181,6 @@ class OrderSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"Duplicate seat {row}-{seat} for flight {flight} in request.")
             flight_ticket_pairs.add((flight, row, seat))
 
-        # Перевірка, чи місце не зайняте у базі
         for flight, row, seat in flight_ticket_pairs:
             if Ticket.objects.filter(flight=flight, row_number=row, seat_number=seat).exists():
                 raise serializers.ValidationError(f"Seat {row}-{seat} is already booked on flight {flight}.")
@@ -207,5 +201,3 @@ class OrderListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ("id", "created_at", "tickets")
-
-
